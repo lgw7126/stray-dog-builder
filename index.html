@@ -1,1278 +1,613 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio — Designer & Developer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    /* ─── Design Tokens (Marvel App style) ─── */
-    :root {
-      --pink-500: #FF4081;
-      --pink-600: #F50057;
-      --pink-100: #FFE4EE;
-      --pink-050: #FFF0F5;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex Kim — 3D Environment Artist &amp; Modeler</title>
+<style>
+/* ── DESIGN TOKENS ── */
+:root{
+  --pink:#FF4081;
+  --pink-glow:rgba(255,64,129,.45);
+  --pink-dim:rgba(255,64,129,.10);
+  --pink-bd:rgba(255,64,129,.20);
+  --bg:#080810;
+  --bg-card:#0f0f1a;
+  --bg-surf:#12121e;
+  --txt:#f0f0ff;
+  --txt-sub:#8a8fa8;
+  --txt-mt:#454a62;
+  --bd:rgba(255,255,255,.06);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--pink);border-radius:2px;}
 
-      --dark-900: #1A1A2E;
-      --dark-800: #2D2D2D;
-      --dark-700: #3D3D3D;
+/* ── SCROLL PROGRESS ── */
+#prog{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--pink),#ff80ab);z-index:9999;width:0%;box-shadow:0 0 10px var(--pink-glow);transition:width .08s linear;}
 
-      --gray-600: #6B7280;
-      --gray-400: #9CA3AF;
-      --gray-200: #E5E7EB;
-      --gray-100: #F3F4F6;
-      --gray-050: #F9FAFB;
+/* ── CURSOR GLOW ── */
+#cg{position:fixed;pointer-events:none;z-index:0;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(255,64,129,.055) 0%,transparent 70%);transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
 
-      --white: #FFFFFF;
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:18px 60px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(24px) saturate(180%);background:rgba(8,8,16,.78);border-bottom:1px solid var(--bd);transition:box-shadow .3s;}
+.logo{font-size:1.35rem;font-weight:900;letter-spacing:-.03em;color:var(--txt);text-decoration:none;}
+.logo em{color:var(--pink);font-style:normal;}
+.nav-ul{display:flex;gap:36px;list-style:none;}
+.nav-ul a{text-decoration:none;color:var(--txt-sub);font-size:.82rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;position:relative;transition:color .3s;}
+.nav-ul a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--pink);transition:width .3s;}
+.nav-ul a:hover,.nav-ul a:focus{color:var(--pink);}
+.nav-ul a:hover::after{width:100%;}
+.nav-btn{padding:9px 22px;border:1px solid var(--pink);color:var(--pink);background:transparent;border-radius:5px;font-size:.8rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all .3s;}
+.nav-btn:hover{background:var(--pink);color:#fff;box-shadow:0 0 24px var(--pink-glow);}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+.hbg span{display:block;width:22px;height:2px;background:var(--txt);border-radius:1px;transition:all .3s;}
 
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:120px 60px 80px;text-align:center;}
+.h-bg{position:absolute;inset:0;background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(255,64,129,.13) 0%,transparent 65%),radial-gradient(ellipse 60% 60% at 90% 90%,rgba(255,64,129,.05) 0%,transparent 55%);}
+.h-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,64,129,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,64,129,.04) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse at center,black 20%,transparent 80%);}
+#pts{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.h-inner{position:relative;z-index:1;max-width:940px;}
 
-      --radius-xs: 4px;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --radius-xl: 24px;
-      --radius-full: 9999px;
+.h-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;background:var(--pink-dim);border:1px solid var(--pink-bd);border-radius:40px;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--pink);margin-bottom:36px;opacity:0;animation:aFD .7s .25s ease forwards;}
+.h-dot{width:6px;height:6px;background:var(--pink);border-radius:50%;animation:aPulse 2s infinite;}
 
-      --shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-sm: 0 1px 6px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
-      --shadow-lg: 0 8px 40px rgba(0,0,0,0.10);
-      --shadow-pink: 0 8px 32px rgba(255,64,129,0.25);
+h1{font-size:clamp(3.2rem,9vw,7.8rem);font-weight:900;line-height:.97;letter-spacing:-.04em;margin-bottom:28px;}
+h1 .l1{display:block;opacity:0;animation:aSU .9s .45s cubic-bezier(.16,1,.3,1) forwards;}
+h1 .l2{display:block;color:var(--pink);text-shadow:0 0 50px rgba(255,64,129,.6),0 0 120px rgba(255,64,129,.2);opacity:0;animation:aSU .9s .65s cubic-bezier(.16,1,.3,1) forwards;}
+h1 .l3{display:block;opacity:0;animation:aSU .9s .85s cubic-bezier(.16,1,.3,1) forwards;}
 
-      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
-    }
+.h-desc{font-size:1.05rem;color:var(--txt-sub);line-height:1.75;max-width:520px;margin:0 auto 52px;opacity:0;animation:aFU .8s 1.05s ease forwards;}
+.h-acts{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;opacity:0;animation:aFU .8s 1.25s ease forwards;}
 
-    /* ─── Reset ─── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: var(--font);
-      color: var(--dark-800);
-      background: var(--white);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { text-decoration: none; color: inherit; }
-    ul { list-style: none; }
-    img { display: block; max-width: 100%; }
+.btn-p{padding:15px 34px;background:var(--pink);color:#fff;border:none;border-radius:6px;font-size:.87rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;text-decoration:none;position:relative;overflow:hidden;display:inline-block;transition:all .3s;}
+.btn-p::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transition:left .5s;}
+.btn-p:hover::before{left:100%;}
+.btn-p:hover{box-shadow:0 10px 36px rgba(255,64,129,.55);transform:translateY(-2px);}
+.btn-g{padding:15px 34px;background:transparent;color:var(--txt);border:1px solid rgba(255,255,255,.16);border-radius:6px;font-size:.87rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;transition:all .3s;}
+.btn-g:hover{border-color:var(--pink);color:var(--pink);transform:translateY(-2px);}
 
-    /* ─── Utility ─── */
-    .container {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 0 32px;
-    }
-    .section { padding: 96px 0; }
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--pink-500);
-      margin-bottom: 16px;
-    }
-    .section-label::before {
-      content: '';
-      display: block;
-      width: 20px;
-      height: 2px;
-      background: var(--pink-500);
-      border-radius: 2px;
-    }
-    .section-title {
-      font-size: clamp(1.75rem, 3vw, 2.5rem);
-      font-weight: 700;
-      color: var(--dark-900);
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-    }
-    .section-subtitle {
-      font-size: 1.0625rem;
-      color: var(--gray-600);
-      margin-top: 12px;
-      line-height: 1.7;
-    }
+.h-stats{display:flex;gap:56px;justify-content:center;margin-top:80px;opacity:0;animation:aFU .8s 1.45s ease forwards;}
+.stat-n{font-size:2.7rem;font-weight:900;color:var(--pink);display:block;line-height:1;}
+.stat-l{font-size:.7rem;color:var(--txt-mt);letter-spacing:.12em;text-transform:uppercase;margin-top:5px;}
 
-    /* ─── Buttons ─── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 13px 28px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font);
-      font-size: 0.9375rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition);
-      border: 2px solid transparent;
-    }
-    .btn-primary {
-      background: var(--pink-500);
-      color: var(--white);
-      box-shadow: var(--shadow-pink);
-    }
-    .btn-primary:hover {
-      background: var(--pink-600);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(255,64,129,0.35);
-    }
-    .btn-outline {
-      background: transparent;
-      color: var(--dark-800);
-      border-color: var(--gray-200);
-    }
-    .btn-outline:hover {
-      border-color: var(--pink-500);
-      color: var(--pink-500);
-      transform: translateY(-2px);
-    }
-    .btn-ghost {
-      background: transparent;
-      color: var(--pink-500);
-      padding: 8px 0;
-      font-size: 0.9rem;
-    }
-    .btn-ghost svg { transition: transform var(--transition); }
-    .btn-ghost:hover svg { transform: translateX(4px); }
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--txt-mt);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:0;animation:aFU .8s 2s ease forwards;}
+.sh-line{width:1px;height:46px;background:linear-gradient(to bottom,transparent,var(--pink));animation:aLine 1.8s 2.3s ease infinite;}
 
-    /* ─── Navigation ─── */
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--gray-200);
-    }
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 68px;
-    }
-    .nav-logo {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--dark-900);
-      letter-spacing: -0.03em;
-    }
-    .nav-logo span { color: var(--pink-500); }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 36px;
-    }
-    .nav-links a {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--gray-600);
-      transition: color var(--transition);
-    }
-    .nav-links a:hover { color: var(--dark-800); }
-    .nav-cta {
-      padding: 9px 22px;
-      font-size: 0.875rem;
-    }
+/* ── SECTION HELPERS ── */
+section:not(#hero){padding:110px 60px;}
+.s-tag{display:flex;align-items:center;gap:10px;font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--pink);margin-bottom:14px;}
+.s-tag::before{content:'';width:28px;height:1px;background:var(--pink);}
+.s-h{font-size:clamp(2rem,4.5vw,3.6rem);font-weight:900;letter-spacing:-.03em;line-height:1.05;}
+.s-h em{color:var(--pink);font-style:normal;}
+.s-p{color:var(--txt-sub);font-size:1rem;line-height:1.75;max-width:480px;margin-top:14px;}
 
-    /* ─── Hero ─── */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding-top: 68px;
-      background: linear-gradient(160deg, var(--white) 55%, var(--pink-050) 100%);
-      overflow: hidden;
-      position: relative;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -200px;
-      right: -200px;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(255,64,129,0.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      gap: 80px;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--pink-100);
-      color: var(--pink-600);
-      font-size: 0.8125rem;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: var(--radius-full);
-      margin-bottom: 24px;
-    }
-    .hero-badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--pink-500);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.4); }
-    }
-    .hero-title {
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      color: var(--dark-900);
-      margin-bottom: 20px;
-    }
-    .hero-title .highlight {
-      color: var(--pink-500);
-      position: relative;
-    }
-    .hero-desc {
-      font-size: 1.0625rem;
-      color: var(--gray-600);
-      line-height: 1.75;
-      margin-bottom: 36px;
-      max-width: 460px;
-    }
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .hero-stats {
-      display: flex;
-      gap: 40px;
-      margin-top: 52px;
-      padding-top: 40px;
-      border-top: 1px solid var(--gray-200);
-    }
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--dark-900);
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-    .stat-value span { color: var(--pink-500); }
-    .stat-label {
-      font-size: 0.8125rem;
-      color: var(--gray-600);
-      margin-top: 4px;
-      font-weight: 500;
-    }
-    .hero-visual {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .avatar-card {
-      position: relative;
-      width: 380px;
-      height: 460px;
-    }
-    .avatar-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--pink-100) 0%, #FFF0F5 100%);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-lg);
-    }
-    .avatar-image {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      height: 380px;
-      background: linear-gradient(180deg, var(--pink-100) 0%, var(--pink-500) 100%);
-      border-radius: var(--radius-lg) var(--radius-lg) var(--radius-xl) var(--radius-xl);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8rem;
-      overflow: hidden;
-    }
-    .avatar-float {
-      position: absolute;
-      background: var(--white);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md);
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .avatar-float-1 {
-      top: 40px;
-      right: -24px;
-    }
-    .avatar-float-2 {
-      bottom: 60px;
-      left: -28px;
-    }
-    .float-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.125rem;
-    }
-    .float-icon-pink { background: var(--pink-100); }
-    .float-icon-blue { background: #EEF2FF; }
-    .float-text-main { font-size: 0.875rem; font-weight: 600; color: var(--dark-800); }
-    .float-text-sub { font-size: 0.75rem; color: var(--gray-600); }
+/* ── REVEAL ── */
+.rv {opacity:0;transform:translateY(44px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1);}
+.rvl{opacity:0;transform:translateX(-44px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1);}
+.rvr{opacity:0;transform:translateX(44px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1);}
+.rv.on,.rvl.on,.rvr.on{opacity:1;transform:none;}
+.d1{transition-delay:.07s;}.d2{transition-delay:.16s;}.d3{transition-delay:.25s;}.d4{transition-delay:.34s;}.d5{transition-delay:.43s;}.d6{transition-delay:.52s;}
 
-    /* ─── About ─── */
-    .about { background: var(--gray-050); }
-    .about-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-    }
-    .about-img {
-      position: relative;
-    }
-    .about-img-box {
-      width: 100%;
-      padding-top: 110%;
-      background: linear-gradient(135deg, #EEF2FF 0%, var(--pink-100) 100%);
-      border-radius: var(--radius-xl);
-      position: relative;
-      overflow: hidden;
-    }
-    .about-img-box::after {
-      content: '👤';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 6rem;
-      opacity: 0.3;
-    }
-    .about-badge-float {
-      position: absolute;
-      bottom: -16px;
-      right: -16px;
-      background: var(--pink-500);
-      color: var(--white);
-      padding: 16px 20px;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-pink);
-      text-align: center;
-    }
-    .about-badge-float .num { font-size: 1.5rem; font-weight: 800; }
-    .about-badge-float .lbl { font-size: 0.75rem; font-weight: 500; opacity: 0.9; }
-    .about-content { display: flex; flex-direction: column; gap: 24px; }
-    .about-text {
-      font-size: 1rem;
-      color: var(--gray-600);
-      line-height: 1.8;
-    }
-    .about-list { display: flex; flex-direction: column; gap: 12px; }
-    .about-list-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.9375rem;
-      color: var(--dark-700);
-      font-weight: 500;
-    }
-    .about-list-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--pink-500);
-      flex-shrink: 0;
-    }
+/* ── ABOUT ── */
+#about{background:var(--bg-surf);position:relative;overflow:hidden;}
+#about::after{content:'';position:absolute;top:-150px;right:-150px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(255,64,129,.06) 0%,transparent 70%);pointer-events:none;}
+.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.ab-frame{position:relative;}
+.ab-img{border-radius:14px;overflow:hidden;aspect-ratio:4/5;background:var(--bg-card);position:relative;}
+.ab-img::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,64,129,.1),transparent);z-index:1;}
+.ab-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--txt-mt);}
+.ab-ico{width:72px;height:72px;border:1px solid var(--pink-bd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;}
+.ab-accent{position:absolute;inset:-12px;border:1px solid rgba(255,64,129,.18);border-radius:18px;z-index:-1;pointer-events:none;}
+.ab-badge{position:absolute;bottom:-18px;right:-18px;background:var(--bg-card);border:1px solid var(--pink-bd);border-radius:12px;padding:18px 22px;z-index:2;}
+.ab-bn{font-size:2.4rem;font-weight:900;color:var(--pink);display:block;line-height:1;}
+.ab-bt{font-size:.7rem;color:var(--txt-sub);text-transform:uppercase;letter-spacing:.09em;}
+.ab-text p{color:var(--txt-sub);line-height:1.8;margin-top:14px;}
+.exp-g{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.exp-i{display:flex;align-items:center;gap:9px;color:var(--txt-sub);font-size:.88rem;}
+.exp-i::before{content:'';width:5px;height:5px;background:var(--pink);border-radius:50%;flex-shrink:0;}
 
-    /* ─── Skills ─── */
-    .skills-header { text-align: center; margin-bottom: 64px; }
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-    }
-    .skill-card {
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius-lg);
-      padding: 32px;
-      transition: all var(--transition);
-    }
-    .skill-card:hover {
-      border-color: var(--pink-500);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-4px);
-    }
-    .skill-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: var(--radius-md);
-      background: var(--pink-100);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-    .skill-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--dark-900);
-      margin-bottom: 8px;
-    }
-    .skill-desc {
-      font-size: 0.875rem;
-      color: var(--gray-600);
-      line-height: 1.65;
-      margin-bottom: 20px;
-    }
-    .skill-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .tag {
-      background: var(--gray-100);
-      color: var(--dark-700);
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-    }
-    .tag-pink {
-      background: var(--pink-100);
-      color: var(--pink-600);
-    }
+/* ── SKILLS ── */
+#skills{position:relative;}
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(188px,1fr));gap:18px;margin-top:56px;}
+.skc{background:var(--bg-card);border:1px solid var(--bd);border-radius:13px;padding:30px 22px;text-align:center;cursor:default;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.16,1,.3,1);}
+.skc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),#ff80ab);transform:scaleX(0);transform-origin:left;transition:transform .4s ease;}
+.skc:hover{border-color:var(--pink-bd);transform:translateY(-7px);box-shadow:0 22px 45px rgba(0,0,0,.5),0 0 30px rgba(255,64,129,.15);}
+.skc:hover::before{transform:scaleX(1);}
+.skc-ico{font-size:2.3rem;display:block;margin-bottom:14px;}
+.skc-name{font-size:.95rem;font-weight:800;margin-bottom:6px;}
+.skc-lv{font-size:.73rem;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.1em;}
+.skc-bar{margin-top:10px;height:2px;background:rgba(255,255,255,.05);border-radius:1px;overflow:hidden;}
+.skc-fill{height:100%;background:linear-gradient(90deg,var(--pink),#ff80ab);border-radius:1px;width:0;transition:width 1.4s cubic-bezier(.16,1,.3,1);}
+.skc.on .skc-fill{width:var(--lv);}
 
-    /* ─── Projects ─── */
-    .projects { background: var(--gray-050); }
-    .projects-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 48px;
-    }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-    }
-    .project-card {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--gray-200);
-      transition: all var(--transition);
-      display: flex;
-      flex-direction: column;
-    }
-    .project-card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-6px);
-    }
-    .project-thumb {
-      height: 200px;
-      position: relative;
-      overflow: hidden;
-    }
-    .project-thumb-inner {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-      transition: transform var(--transition);
-    }
-    .project-card:hover .project-thumb-inner { transform: scale(1.06); }
-    .thumb-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .thumb-gradient-2 { background: linear-gradient(135deg, var(--pink-500) 0%, #ff8a65 100%); }
-    .thumb-gradient-3 { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
-    .thumb-gradient-4 { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-    .thumb-gradient-5 { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
-    .thumb-gradient-6 { background: linear-gradient(135deg, #c471ed 0%, #12c2e9 100%); }
-    .project-badge {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(255,255,255,0.95);
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--dark-700);
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-    }
-    .project-body { padding: 28px; flex: 1; display: flex; flex-direction: column; }
-    .project-title {
-      font-size: 1.0625rem;
-      font-weight: 700;
-      color: var(--dark-900);
-      margin-bottom: 10px;
-      letter-spacing: -0.01em;
-    }
-    .project-desc {
-      font-size: 0.875rem;
-      color: var(--gray-600);
-      line-height: 1.7;
-      margin-bottom: 20px;
-      flex: 1;
-    }
-    .project-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: auto;
-    }
-    .project-stack { display: flex; gap: 6px; flex-wrap: wrap; }
-    .project-link {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      background: var(--gray-100);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-600);
-      transition: all var(--transition);
-      font-size: 0.875rem;
-    }
-    .project-link:hover {
-      background: var(--pink-500);
-      color: var(--white);
-    }
+/* ── PORTFOLIO ── */
+#portfolio{background:var(--bg-surf);}
+.filts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:44px;}
+.filt{padding:7px 18px;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--txt-sub);border-radius:40px;font-size:.76rem;font-weight:700;letter-spacing:.07em;cursor:pointer;transition:all .3s;}
+.filt.act,.filt:hover{background:var(--pink);border-color:var(--pink);color:#fff;}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.pc{background:var(--bg-card);border-radius:13px;overflow:hidden;position:relative;cursor:pointer;border:1px solid var(--bd);transition:border-color .4s,box-shadow .4s;}
+.pc.wide{grid-column:span 2;}
+.pc:hover{border-color:var(--pink-bd);box-shadow:0 28px 60px rgba(0,0,0,.55),0 0 40px rgba(255,64,129,.18),inset 0 1px 0 rgba(255,255,255,.06);}
+.pc-img{width:100%;aspect-ratio:16/10;position:relative;overflow:hidden;}
+.pc-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.6rem;transition:transform .6s cubic-bezier(.16,1,.3,1);}
+.pc:hover .pc-bg{transform:scale(1.07);}
+.pc-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,16,.96) 0%,rgba(8,8,16,.42) 45%,transparent 100%);opacity:0;transition:opacity .4s;}
+.pc:hover .pc-ov{opacity:1;}
+.pc-hov{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:26px;opacity:0;transform:translateY(18px);transition:opacity .42s cubic-bezier(.16,1,.3,1),transform .42s cubic-bezier(.16,1,.3,1);}
+.pc:hover .pc-hov{opacity:1;transform:translateY(0);}
+.pc-cat{font-size:.68rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--pink);margin-bottom:7px;}
+.pc-t{font-size:1.15rem;font-weight:800;margin-bottom:7px;line-height:1.3;}
+.pc-d{font-size:.82rem;color:var(--txt-sub);line-height:1.6;margin-bottom:14px;}
+.pc-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.pc-tag{padding:3px 9px;background:rgba(255,64,129,.12);border:1px solid rgba(255,64,129,.28);color:var(--pink);border-radius:4px;font-size:.68rem;font-weight:700;}
+.pc-foot{padding:18px 22px;}
+.pc-ft{font-size:.95rem;font-weight:800;margin-bottom:4px;}
+.pc-fc{font-size:.74rem;color:var(--pink);font-weight:600;}
 
-    /* ─── Experience ─── */
-    .experience-inner {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 80px;
-    }
-    .exp-sidebar { position: sticky; top: 100px; align-self: start; }
-    .timeline { display: flex; flex-direction: column; gap: 0; }
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 20px 1fr;
-      gap: 24px;
-      padding-bottom: 40px;
-      position: relative;
-    }
-    .timeline-item:last-child { padding-bottom: 0; }
-    .timeline-track {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .timeline-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--pink-500);
-      border: 3px solid var(--pink-100);
-      flex-shrink: 0;
-      margin-top: 6px;
-    }
-    .timeline-line {
-      width: 2px;
-      flex: 1;
-      background: var(--gray-200);
-      margin-top: 4px;
-    }
-    .timeline-item:last-child .timeline-line { display: none; }
-    .timeline-content {}
-    .timeline-date {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--pink-500);
-      margin-bottom: 6px;
-      letter-spacing: 0.04em;
-    }
-    .timeline-role {
-      font-size: 1.0625rem;
-      font-weight: 700;
-      color: var(--dark-900);
-      margin-bottom: 4px;
-    }
-    .timeline-company {
-      font-size: 0.9rem;
-      color: var(--gray-600);
-      font-weight: 500;
-      margin-bottom: 12px;
-    }
-    .timeline-desc {
-      font-size: 0.875rem;
-      color: var(--gray-600);
-      line-height: 1.7;
-    }
+/* ── CONTACT ── */
+#contact{position:relative;}
+.ct-wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:80px;align-items:start;}
+.ct-info p{color:var(--txt-sub);line-height:1.75;margin-bottom:36px;}
+.ct-items{display:flex;flex-direction:column;gap:14px;}
+.ct-item{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--bg-card);border:1px solid var(--bd);border-radius:10px;transition:all .3s;}
+.ct-item:hover{border-color:var(--pink-bd);transform:translateX(5px);}
+.ct-ico{width:40px;height:40px;background:var(--pink-dim);border:1px solid var(--pink-bd);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.ct-lbl{font-size:.7rem;color:var(--txt-mt);text-transform:uppercase;letter-spacing:.09em;}
+.ct-val{font-size:.92rem;font-weight:700;}
+.ct-form{background:var(--bg-card);border:1px solid var(--bd);border-radius:16px;padding:38px;}
+.ct-form h3{font-size:1.25rem;font-weight:800;margin-bottom:22px;}
+.fg{margin-bottom:18px;}
+.fl{display:block;font-size:.74rem;font-weight:700;color:var(--txt-sub);text-transform:uppercase;letter-spacing:.09em;margin-bottom:7px;}
+.fi{width:100%;padding:13px 15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:var(--txt);font-size:.92rem;outline:none;font-family:inherit;transition:all .3s;}
+.fi:focus{border-color:var(--pink);box-shadow:0 0 0 3px var(--pink-dim);}
+.fi::placeholder{color:var(--txt-mt);}
+textarea.fi{resize:vertical;min-height:112px;}
 
-    /* ─── Contact ─── */
-    .contact { background: var(--dark-900); color: var(--white); }
-    .contact-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: start;
-    }
-    .contact .section-label { color: #FF79A8; }
-    .contact .section-label::before { background: #FF79A8; }
-    .contact .section-title { color: var(--white); }
-    .contact .section-subtitle { color: rgba(255,255,255,0.55); }
-    .contact-links { display: flex; flex-direction: column; gap: 16px; margin-top: 36px; }
-    .contact-link-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius-md);
-      transition: all var(--transition);
-      cursor: pointer;
-    }
-    .contact-link-item:hover {
-      background: rgba(255,64,129,0.12);
-      border-color: rgba(255,64,129,0.4);
-    }
-    .contact-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.125rem;
-      flex-shrink: 0;
-    }
-    .contact-link-text { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
-    .contact-link-val { font-size: 0.9375rem; font-weight: 600; color: var(--white); }
-    .form { display: flex; flex-direction: column; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.65);
-      letter-spacing: 0.03em;
-    }
-    .form-input {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: var(--radius-sm);
-      padding: 13px 16px;
-      color: var(--white);
-      font-family: var(--font);
-      font-size: 0.9375rem;
-      outline: none;
-      transition: border-color var(--transition), background var(--transition);
-    }
-    .form-input::placeholder { color: rgba(255,255,255,0.3); }
-    .form-input:focus {
-      border-color: var(--pink-500);
-      background: rgba(255,255,255,0.09);
-    }
-    textarea.form-input { resize: vertical; min-height: 120px; }
-    .form .btn-primary { width: 100%; justify-content: center; }
+/* ── FOOTER ── */
+footer{padding:36px 60px;background:var(--bg-surf);border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;}
+.f-copy{font-size:.82rem;color:var(--txt-mt);}
+.f-copy em{color:var(--pink);font-style:normal;}
+.socials{display:flex;gap:10px;}
+.soc{width:38px;height:38px;background:var(--bg-card);border:1px solid var(--bd);border-radius:8px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:.95rem;color:var(--txt-sub);transition:all .3s;}
+.soc:hover{border-color:var(--pink);color:var(--pink);transform:translateY(-3px);box-shadow:0 8px 20px rgba(255,64,129,.28);}
 
-    /* ─── Footer ─── */
-    .footer {
-      background: #111120;
-      padding: 32px 0;
-      border-top: 1px solid rgba(255,255,255,0.07);
-    }
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .footer-logo { font-size: 1rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
-    .footer-logo span { color: var(--pink-500); }
-    .footer-copy { font-size: 0.8125rem; color: rgba(255,255,255,0.35); }
-    .footer-socials { display: flex; gap: 12px; }
-    .social-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      background: rgba(255,255,255,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-      color: rgba(255,255,255,0.6);
-      transition: all var(--transition);
-    }
-    .social-btn:hover {
-      background: var(--pink-500);
-      color: var(--white);
-    }
+/* ── BACK TO TOP ── */
+#btt{position:fixed;bottom:36px;right:36px;width:46px;height:46px;background:var(--pink);border:none;border-radius:50%;color:#fff;font-size:1.1rem;cursor:pointer;opacity:0;transform:translateY(16px);transition:all .3s;z-index:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,64,129,.4);}
+#btt.on{opacity:1;transform:translateY(0);}
+#btt:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(255,64,129,.55);}
 
-    /* ─── Divider ─── */
-    .divider {
-      height: 1px;
-      background: var(--gray-200);
-      margin: 0;
-    }
+/* ── MOBILE NAV ── */
+.mob-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:850;opacity:0;pointer-events:none;transition:opacity .3s;}
+.mob-ov.on{opacity:1;pointer-events:all;}
+.mob-menu{position:fixed;top:0;right:0;bottom:0;width:270px;background:var(--bg-surf);border-left:1px solid var(--pink-bd);z-index:860;padding:72px 28px 28px;transform:translateX(100%);transition:transform .42s cubic-bezier(.16,1,.3,1);}
+.mob-menu.on{transform:translateX(0);}
+.mob-menu ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.mob-menu a{display:block;padding:13px 16px;color:var(--txt-sub);text-decoration:none;font-size:.95rem;font-weight:700;border-radius:8px;transition:all .3s;}
+.mob-menu a:hover{background:var(--pink-dim);color:var(--pink);}
+.mob-x{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--txt-sub);font-size:1.4rem;cursor:pointer;padding:6px;}
 
-    /* ─── Responsive ─── */
-    @media (max-width: 900px) {
-      .hero-inner,
-      .about-inner,
-      .contact-inner,
-      .experience-inner { grid-template-columns: 1fr; gap: 48px; }
-      .hero-visual { display: none; }
-      .projects-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-      .exp-sidebar { position: static; }
-      .nav-links { display: none; }
-    }
-    @media (max-width: 600px) {
-      .container { padding: 0 20px; }
-      .section { padding: 64px 0; }
-      .hero-stats { gap: 24px; }
-      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
-    }
+/* ── KEYFRAMES ── */
+@keyframes aFD{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:none;}}
+@keyframes aFU{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+@keyframes aSU{from{opacity:0;transform:translateY(60px) skewY(1.5deg);filter:blur(6px);}to{opacity:1;transform:none;filter:none;}}
+@keyframes aPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.75);}}
+@keyframes aLine{0%{transform:scaleY(0);transform-origin:top;opacity:0;}50%{opacity:1;}100%{transform:scaleY(1);transform-origin:bottom;opacity:0;}}
+@keyframes aFloat{0%{opacity:0;transform:translateY(0) scale(0);}8%{opacity:.7;}88%{opacity:.3;}100%{opacity:0;transform:translateY(-90vh) translateX(calc(var(--dx)*80px)) scale(1.8);}}
 
-    /* ─── Scroll animation utility ─── */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  nav{padding:15px 28px;}
+  section:not(#hero){padding:80px 28px;}
+  #hero{padding:100px 28px 70px;}
+  .pg{grid-template-columns:repeat(2,1fr);}
+  .pc.wide{grid-column:span 2;}
+  .ab-grid,.ct-wrap{grid-template-columns:1fr;gap:50px;}
+  .ab-frame{max-width:380px;margin:0 auto;}
+}
+@media(max-width:720px){
+  nav{padding:14px 18px;}
+  section:not(#hero){padding:60px 18px;}
+  #hero{padding:90px 18px 60px;}
+  .nav-ul,.nav-btn{display:none;}
+  .hbg{display:flex;}
+  .h-stats{gap:28px;}
+  .pg{grid-template-columns:1fr;}
+  .pc.wide{grid-column:span 1;}
+  .sk-grid{grid-template-columns:repeat(2,1fr);}
+  footer{padding:26px 18px;flex-direction:column;text-align:center;}
+  #btt{bottom:22px;right:18px;}
+}
+</style>
 </head>
 <body>
 
-  <!-- ── Navigation ── -->
-  <nav class="nav">
-    <div class="container">
-      <div class="nav-inner">
-        <a href="#" class="nav-logo">port<span>.</span>folio</a>
-        <ul class="nav-links">
-          <li><a href="#about">소개</a></li>
-          <li><a href="#skills">스킬</a></li>
-          <li><a href="#projects">프로젝트</a></li>
-          <li><a href="#experience">경력</a></li>
-          <li><a href="#contact">연락</a></li>
-        </ul>
-        <a href="#contact" class="btn btn-primary nav-cta">연락하기</a>
+<div id="prog"></div>
+<div id="cg"></div>
+
+<!-- ── NAVIGATION ── -->
+<nav id="nav">
+  <a href="#hero" class="logo">ALEX<em>.</em>KIM</a>
+  <ul class="nav-ul">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-btn">Hire Me</a>
+  <button class="hbg" id="hbg" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mob-ov" id="mo"></div>
+<nav class="mob-menu" id="mm">
+  <button class="mob-x" id="mx" aria-label="Close menu">✕</button>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="h-bg"></div>
+  <div class="h-grid"></div>
+  <div id="pts"></div>
+
+  <div class="h-inner">
+    <div class="h-badge"><span class="h-dot"></span>Available for Projects</div>
+
+    <h1>
+      <span class="l1">CINEMATIC</span>
+      <span class="l2">3D WORLDS</span>
+      <span class="l3">BROUGHT TO LIFE</span>
+    </h1>
+
+    <p class="h-desc">Senior 3D Environment Artist &amp; Modeler crafting photorealistic worlds for games, film, and immersive virtual experiences.</p>
+
+    <div class="h-acts">
+      <a href="#portfolio" class="btn-p">View My Work</a>
+      <a href="#contact" class="btn-g">Get In Touch</a>
+    </div>
+
+    <div class="h-stats">
+      <div class="stat"><span class="stat-n" data-target="8" data-suffix="+">0</span><span class="stat-l">Years Experience</span></div>
+      <div class="stat"><span class="stat-n" data-target="60" data-suffix="+">0</span><span class="stat-l">Projects Delivered</span></div>
+      <div class="stat"><span class="stat-n" data-target="24" data-suffix="">0</span><span class="stat-l">Awards Won</span></div>
+    </div>
+  </div>
+
+  <div class="scroll-hint"><span>Scroll</span><div class="sh-line"></div></div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="ab-grid">
+    <div class="ab-frame rvl">
+      <div class="ab-img">
+        <div class="ab-ph">
+          <div class="ab-ico">👤</div>
+          <span style="font-size:.78rem;letter-spacing:.1em;text-transform:uppercase">Artist Photo</span>
+        </div>
+      </div>
+      <div class="ab-accent"></div>
+      <div class="ab-badge">
+        <span class="ab-bn">8+</span>
+        <span class="ab-bt">Years in Industry</span>
       </div>
     </div>
-  </nav>
 
-  <!-- ── Hero ── -->
-  <section class="hero" id="home">
-    <div class="container">
-      <div class="hero-inner">
-        <div class="hero-left fade-up">
-          <div class="hero-badge">현재 구직중</div>
-          <h1 class="hero-title">
-            창의적인<br/>
-            <span class="highlight">디자인</span>과<br/>
-            탄탄한 개발
-          </h1>
-          <p class="hero-desc">
-            사용자 경험을 최우선으로 생각하는 UI/UX 디자이너 겸 프론트엔드 개발자입니다.
-            아이디어를 아름답고 기능적인 디지털 제품으로 만듭니다.
-          </p>
-          <div class="hero-actions">
-            <a href="#projects" class="btn btn-primary">
-              프로젝트 보기
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="#contact" class="btn btn-outline">이력서 다운로드</a>
-          </div>
-          <div class="hero-stats">
-            <div>
-              <div class="stat-value">3<span>+</span></div>
-              <div class="stat-label">년의 경험</div>
-            </div>
-            <div>
-              <div class="stat-value">24<span>+</span></div>
-              <div class="stat-label">완료 프로젝트</div>
-            </div>
-            <div>
-              <div class="stat-value">12<span>+</span></div>
-              <div class="stat-label">만족한 클라이언트</div>
-            </div>
-          </div>
-        </div>
-        <div class="hero-visual fade-up">
-          <div class="avatar-card">
-            <div class="avatar-bg"></div>
-            <div class="avatar-image">👤</div>
-            <div class="avatar-float avatar-float-1">
-              <div class="float-icon float-icon-pink">🎨</div>
-              <div>
-                <div class="float-text-main">UI/UX 디자인</div>
-                <div class="float-text-sub">Figma · Prototyping</div>
-              </div>
-            </div>
-            <div class="avatar-float avatar-float-2">
-              <div class="float-icon float-icon-blue">⚡</div>
-              <div>
-                <div class="float-text-main">프론트엔드 개발</div>
-                <div class="float-text-sub">React · TypeScript</div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="ab-text">
+      <div class="rv">
+        <p class="s-tag">About Me</p>
+        <h2 class="s-h">Shaping <em>Virtual</em><br>Realities</h2>
+      </div>
+      <p class="rv d1">I'm a passionate 3D environment artist with over 8 years of experience creating immersive digital worlds. From AAA game environments to cinematic VFX, I bring technical precision and artistic vision together.</p>
+      <p class="rv d2">My work spans real-time game environments, photorealistic archviz, and cinematic VFX — always pushing the boundaries of what's visually possible.</p>
+      <div class="exp-g rv d3">
+        <div class="exp-i">Environment Modeling</div>
+        <div class="exp-i">Texture &amp; Shading</div>
+        <div class="exp-i">Lighting &amp; Rendering</div>
+        <div class="exp-i">Scene Composition</div>
+        <div class="exp-i">PBR Workflows</div>
+        <div class="exp-i">Procedural Tools</div>
+        <div class="exp-i">Real-time Optimization</div>
+        <div class="exp-i">VFX Integration</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── About ── -->
-  <section class="section about" id="about">
-    <div class="container">
-      <div class="about-inner">
-        <div class="about-img fade-up">
-          <div class="about-img-box"></div>
-          <div class="about-badge-float">
-            <div class="num">3+</div>
-            <div class="lbl">년의 경험</div>
-          </div>
-        </div>
-        <div class="about-content fade-up">
-          <div>
-            <div class="section-label">나에 대해</div>
-            <h2 class="section-title">디자인과 코드로<br/>세상과 소통합니다</h2>
-          </div>
-          <p class="about-text">
-            안녕하세요! 저는 사용자 중심의 디지털 경험을 만드는 것을 좋아하는 크리에이터입니다.
-            디자인 감각과 기술적인 구현 능력을 모두 갖추고 있어, 아이디어 구상부터 완성까지
-            전체 프로세스를 이끌 수 있습니다.
-          </p>
-          <p class="about-text">
-            마블 앱, 피그마, VS Code를 주요 도구로 사용하며, 항상 새로운 기술 트렌드를
-            학습하고 성장하는 것에 큰 가치를 둡니다.
-          </p>
-          <ul class="about-list">
-            <li class="about-list-item">
-              <span class="about-list-dot"></span>
-              서울 거주 · 원격 근무 가능
-            </li>
-            <li class="about-list-item">
-              <span class="about-list-dot"></span>
-              UI/UX 디자인 · 프론트엔드 개발
-            </li>
-            <li class="about-list-item">
-              <span class="about-list-dot"></span>
-              한국어(모국어) · 영어(비즈니스 수준)
-            </li>
-          </ul>
-          <div>
-            <a href="#contact" class="btn btn-ghost">
-              함께 일해요
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
+<!-- ── SKILLS ── -->
+<section id="skills">
+  <div class="rv">
+    <p class="s-tag">Technical Arsenal</p>
+    <h2 class="s-h">Tools &amp; <em>Expertise</em></h2>
+    <p class="s-p">Mastering industry-standard software to deliver exceptional results across every discipline.</p>
+  </div>
+
+  <div class="sk-grid">
+    <div class="skc rv d1" style="--lv:95%"><span class="skc-ico">🎨</span><div class="skc-name">Blender</div><div class="skc-lv">Expert</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d2" style="--lv:90%"><span class="skc-ico">⚡</span><div class="skc-name">Unreal Engine 5</div><div class="skc-lv">Advanced</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d3" style="--lv:88%"><span class="skc-ico">🔷</span><div class="skc-name">3ds Max</div><div class="skc-lv">Advanced</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d4" style="--lv:93%"><span class="skc-ico">🖼️</span><div class="skc-name">Substance Painter</div><div class="skc-lv">Expert</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d5" style="--lv:85%"><span class="skc-ico">🌊</span><div class="skc-name">Houdini</div><div class="skc-lv">Proficient</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d6" style="--lv:87%"><span class="skc-ico">🔥</span><div class="skc-name">ZBrush</div><div class="skc-lv">Advanced</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d1" style="--lv:80%"><span class="skc-ico">✨</span><div class="skc-name">V-Ray / Arnold</div><div class="skc-lv">Advanced</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+    <div class="skc rv d2" style="--lv:83%"><span class="skc-ico">🏗️</span><div class="skc-name">SpeedTree</div><div class="skc-lv">Proficient</div><div class="skc-bar"><div class="skc-fill"></div></div></div>
+  </div>
+</section>
+
+<!-- ── PORTFOLIO ── -->
+<section id="portfolio">
+  <div class="rv">
+    <p class="s-tag">Selected Works</p>
+    <h2 class="s-h">Featured <em>Projects</em></h2>
+    <p class="s-p">A curated selection of cinematic renders, game environments, and architectural visualizations.</p>
+  </div>
+
+  <div class="filts rv d1">
+    <button class="filt act">All Work</button>
+    <button class="filt">Environments</button>
+    <button class="filt">Characters</button>
+    <button class="filt">Archviz</button>
+    <button class="filt">VFX</button>
+  </div>
+
+  <div class="pg">
+
+    <!-- 1 – wide -->
+    <div class="pc wide rv d1">
+      <div class="pc-img">
+        <div class="pc-bg" style="background:linear-gradient(135deg,#0d1b2a,#1a1a3e,#2d1b4e,#1a0a1e);">🏔️</div>
+      </div>
+      <div class="pc-ov"></div>
+      <div class="pc-hov">
+        <p class="pc-cat">Environment Design</p>
+        <h3 class="pc-t">Alien Highlands — UE5 Open World</h3>
+        <p class="pc-d">Vast alien landscape rendered in Unreal Engine 5 with Nanite &amp; Lumen. Dynamic weather, volumetric atmospherics, and 40 km² of playable terrain.</p>
+        <div class="pc-tags">
+          <span class="pc-tag">Unreal Engine 5</span><span class="pc-tag">Nanite</span><span class="pc-tag">Lumen</span><span class="pc-tag">Open World</span>
         </div>
       </div>
+      <div class="pc-foot"><div class="pc-ft">Alien Highlands</div><div class="pc-fc">Environment Design</div></div>
     </div>
-  </section>
 
-  <!-- ── Skills ── -->
-  <section class="section" id="skills">
-    <div class="container">
-      <div class="skills-header fade-up">
-        <div class="section-label">전문 기술</div>
-        <h2 class="section-title">다양한 분야의<br/>역량을 갖추고 있습니다</h2>
-        <p class="section-subtitle">디자인부터 개발, 기획까지 폭넓게 다룹니다.</p>
+    <!-- 2 -->
+    <div class="pc rv d2">
+      <div class="pc-img">
+        <div class="pc-bg" style="background:linear-gradient(135deg,#0a1628,#0f3460,#16213e);">🏙️</div>
       </div>
-      <div class="skills-grid">
-        <div class="skill-card fade-up">
-          <div class="skill-icon">🎨</div>
-          <div class="skill-name">UI/UX 디자인</div>
-          <div class="skill-desc">사용자 리서치를 기반으로 직관적이고 아름다운 인터페이스를 설계합니다.</div>
-          <div class="skill-tags">
-            <span class="tag tag-pink">Figma</span>
-            <span class="tag">Prototyping</span>
-            <span class="tag">Design System</span>
-          </div>
-        </div>
-        <div class="skill-card fade-up">
-          <div class="skill-icon">⚛️</div>
-          <div class="skill-name">프론트엔드 개발</div>
-          <div class="skill-desc">모던 웹 기술로 빠르고 반응형인 웹 애플리케이션을 개발합니다.</div>
-          <div class="skill-tags">
-            <span class="tag tag-pink">React</span>
-            <span class="tag">TypeScript</span>
-            <span class="tag">Next.js</span>
-          </div>
-        </div>
-        <div class="skill-card fade-up">
-          <div class="skill-icon">🎯</div>
-          <div class="skill-name">브랜드 아이덴티티</div>
-          <div class="skill-desc">브랜드의 가치와 비전을 시각적 언어로 표현하는 아이덴티티를 만듭니다.</div>
-          <div class="skill-tags">
-            <span class="tag tag-pink">Branding</span>
-            <span class="tag">Logo Design</span>
-            <span class="tag">Typography</span>
-          </div>
-        </div>
-        <div class="skill-card fade-up">
-          <div class="skill-icon">📱</div>
-          <div class="skill-name">모바일 앱 디자인</div>
-          <div class="skill-desc">iOS와 Android 플랫폼의 가이드라인을 준수한 모바일 UX를 설계합니다.</div>
-          <div class="skill-tags">
-            <span class="tag tag-pink">iOS</span>
-            <span class="tag">Android</span>
-            <span class="tag">Flutter</span>
-          </div>
-        </div>
-        <div class="skill-card fade-up">
-          <div class="skill-icon">✍️</div>
-          <div class="skill-name">콘텐츠 디자인</div>
-          <div class="skill-desc">SNS 콘텐츠, 배너, 포스터 등 다양한 마케팅 시각물을 제작합니다.</div>
-          <div class="skill-tags">
-            <span class="tag tag-pink">Illustrator</span>
-            <span class="tag">Photoshop</span>
-            <span class="tag">Motion</span>
-          </div>
-        </div>
-        <div class="skill-card fade-up">
-          <div class="skill-icon">🗄️</div>
-          <div class="skill-name">백엔드 기초</div>
-          <div class="skill-desc">API 연동 및 데이터베이스 기초 지식으로 풀스택 협업을 원활히 합니다.</div>
-          <div class="skill-tags">
-            <span class="tag tag-pink">Node.js</span>
-            <span class="tag">REST API</span>
-            <span class="tag">Supabase</span>
-          </div>
-        </div>
+      <div class="pc-ov"></div>
+      <div class="pc-hov">
+        <p class="pc-cat">Archviz</p>
+        <h3 class="pc-t">Neo-Tokyo Megastructure</h3>
+        <p class="pc-d">Cyberpunk cityscape with procedural building generation and neon-lit atmospheres.</p>
+        <div class="pc-tags"><span class="pc-tag">Blender</span><span class="pc-tag">Cycles</span><span class="pc-tag">Procedural</span></div>
       </div>
+      <div class="pc-foot"><div class="pc-ft">Neo-Tokyo</div><div class="pc-fc">Archviz</div></div>
     </div>
-  </section>
 
-  <div class="divider"></div>
-
-  <!-- ── Projects ── -->
-  <section class="section projects" id="projects">
-    <div class="container">
-      <div class="projects-header fade-up">
-        <div>
-          <div class="section-label">포트폴리오</div>
-          <h2 class="section-title">주요 프로젝트</h2>
-        </div>
-        <a href="#contact" class="btn btn-outline">모두 보기</a>
+    <!-- 3 -->
+    <div class="pc rv d3">
+      <div class="pc-img">
+        <div class="pc-bg" style="background:linear-gradient(135deg,#1a0a05,#3d1a0a,#2d0f05);">🌋</div>
       </div>
-      <div class="projects-grid">
-        <div class="project-card fade-up">
-          <div class="project-thumb">
-            <div class="project-thumb-inner thumb-gradient-1">🛍️</div>
-            <span class="project-badge">E-Commerce</span>
-          </div>
-          <div class="project-body">
-            <div class="project-title">쇼핑몰 리디자인 프로젝트</div>
-            <div class="project-desc">전환율 35% 향상을 달성한 대형 쇼핑몰의 UX 리디자인. 데이터 기반 사용자 리서치부터 완성까지 주도했습니다.</div>
-            <div class="project-footer">
-              <div class="project-stack">
-                <span class="tag">Figma</span>
-                <span class="tag">React</span>
-              </div>
-              <a href="#" class="project-link">↗</a>
-            </div>
-          </div>
+      <div class="pc-ov"></div>
+      <div class="pc-hov">
+        <p class="pc-cat">VFX</p>
+        <h3 class="pc-t">Volcanic Destruction</h3>
+        <p class="pc-d">Houdini-based VFX simulation featuring pyroclastic flows and advanced particle systems.</p>
+        <div class="pc-tags"><span class="pc-tag">Houdini</span><span class="pc-tag">VFX</span><span class="pc-tag">Simulation</span></div>
+      </div>
+      <div class="pc-foot"><div class="pc-ft">Volcanic Destruction</div><div class="pc-fc">VFX Simulation</div></div>
+    </div>
+
+    <!-- 4 -->
+    <div class="pc rv d2">
+      <div class="pc-img">
+        <div class="pc-bg" style="background:linear-gradient(135deg,#0a1f0a,#1a3d1a,#0a2a0a);">🌿</div>
+      </div>
+      <div class="pc-ov"></div>
+      <div class="pc-hov">
+        <p class="pc-cat">Environment</p>
+        <h3 class="pc-t">Ancient Forest Ruins</h3>
+        <p class="pc-d">Atmospheric forest environment with moss-covered ruins and cinematic god-ray lighting.</p>
+        <div class="pc-tags"><span class="pc-tag">UE5</span><span class="pc-tag">SpeedTree</span><span class="pc-tag">Megascans</span></div>
+      </div>
+      <div class="pc-foot"><div class="pc-ft">Ancient Forest Ruins</div><div class="pc-fc">Environment</div></div>
+    </div>
+
+    <!-- 5 -->
+    <div class="pc rv d3">
+      <div class="pc-img">
+        <div class="pc-bg" style="background:linear-gradient(135deg,#1a1a1a,#2d2d2d,#0d0d1a);">🤖</div>
+      </div>
+      <div class="pc-ov"></div>
+      <div class="pc-hov">
+        <p class="pc-cat">Character</p>
+        <h3 class="pc-t">Mech Warrior Model</h3>
+        <p class="pc-d">High-poly mechanical character with full PBR texturing and rig-ready topology.</p>
+        <div class="pc-tags"><span class="pc-tag">ZBrush</span><span class="pc-tag">Substance</span><span class="pc-tag">PBR</span></div>
+      </div>
+      <div class="pc-foot"><div class="pc-ft">Mech Warrior</div><div class="pc-fc">Character Model</div></div>
+    </div>
+
+    <!-- 6 – wide -->
+    <div class="pc wide rv d1">
+      <div class="pc-img">
+        <div class="pc-bg" style="background:linear-gradient(135deg,#0a0a1a,#1a0a2d,#2d1a4e,#1a0a3d);">🌌</div>
+      </div>
+      <div class="pc-ov"></div>
+      <div class="pc-hov">
+        <p class="pc-cat">Cinematic Rendering</p>
+        <h3 class="pc-t">Deep Space Station — Cinematic VFX Reel</h3>
+        <p class="pc-d">Award-winning cinematic sequence featuring a derelict space station, full VFX pipeline, volumetrics, and lens effects.</p>
+        <div class="pc-tags">
+          <span class="pc-tag">3ds Max</span><span class="pc-tag">V-Ray</span><span class="pc-tag">After Effects</span><span class="pc-tag">🏆 Award Winner</span>
         </div>
-        <div class="project-card fade-up">
-          <div class="project-thumb">
-            <div class="project-thumb-inner thumb-gradient-2">📊</div>
-            <span class="project-badge">Dashboard</span>
-          </div>
-          <div class="project-body">
-            <div class="project-title">SaaS 어드민 대시보드</div>
-            <div class="project-desc">복잡한 데이터를 직관적으로 시각화하는 B2B SaaS 플랫폼의 어드민 인터페이스를 설계하고 구현했습니다.</div>
-            <div class="project-footer">
-              <div class="project-stack">
-                <span class="tag">Next.js</span>
-                <span class="tag">TypeScript</span>
-              </div>
-              <a href="#" class="project-link">↗</a>
-            </div>
-          </div>
-        </div>
-        <div class="project-card fade-up">
-          <div class="project-thumb">
-            <div class="project-thumb-inner thumb-gradient-3">🏃</div>
-            <span class="project-badge">Mobile App</span>
-          </div>
-          <div class="project-body">
-            <div class="project-title">헬스케어 모바일 앱</div>
-            <div class="project-desc">운동 기록과 건강 데이터를 추적하는 iOS/Android 앱의 전체 UX 플로우와 UI를 디자인했습니다.</div>
-            <div class="project-footer">
-              <div class="project-stack">
-                <span class="tag">Figma</span>
-                <span class="tag">Flutter</span>
-              </div>
-              <a href="#" class="project-link">↗</a>
-            </div>
-          </div>
-        </div>
-        <div class="project-card fade-up">
-          <div class="project-thumb">
-            <div class="project-thumb-inner thumb-gradient-4">🌿</div>
-            <span class="project-badge">Branding</span>
-          </div>
-          <div class="project-body">
-            <div class="project-title">스타트업 브랜드 아이덴티티</div>
-            <div class="project-desc">친환경 스타트업의 로고, 컬러 시스템, 타이포그래피, 브랜드 가이드라인 전체를 제작했습니다.</div>
-            <div class="project-footer">
-              <div class="project-stack">
-                <span class="tag">Illustrator</span>
-                <span class="tag">Branding</span>
-              </div>
-              <a href="#" class="project-link">↗</a>
-            </div>
-          </div>
-        </div>
-        <div class="project-card fade-up">
-          <div class="project-thumb">
-            <div class="project-thumb-inner thumb-gradient-5">🎓</div>
-            <span class="project-badge">EdTech</span>
-          </div>
-          <div class="project-body">
-            <div class="project-title">온라인 학습 플랫폼</div>
-            <div class="project-desc">수강생 1만 명 이상이 사용하는 에듀테크 플랫폼의 학습 경험을 재설계하여 완주율 60% 향상을 이뤘습니다.</div>
-            <div class="project-footer">
-              <div class="project-stack">
-                <span class="tag">React</span>
-                <span class="tag">Node.js</span>
-              </div>
-              <a href="#" class="project-link">↗</a>
-            </div>
-          </div>
-        </div>
-        <div class="project-card fade-up">
-          <div class="project-thumb">
-            <div class="project-thumb-inner thumb-gradient-6">🎵</div>
-            <span class="project-badge">Web App</span>
-          </div>
-          <div class="project-body">
-            <div class="project-title">음악 스트리밍 웹앱</div>
-            <div class="project-desc">Spotify API를 활용한 음악 발견 서비스. 사용자 취향 기반 알고리즘과 직관적 UI로 좋은 반응을 얻었습니다.</div>
-            <div class="project-footer">
-              <div class="project-stack">
-                <span class="tag">React</span>
-                <span class="tag">API</span>
-              </div>
-              <a href="#" class="project-link">↗</a>
-            </div>
-          </div>
+      </div>
+      <div class="pc-foot"><div class="pc-ft">Deep Space Station</div><div class="pc-fc">Cinematic Rendering</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="ct-wrap">
+    <div>
+      <div class="rv">
+        <p class="s-tag">Get In Touch</p>
+        <h2 class="s-h">Let's Build<br><em>Together</em></h2>
+      </div>
+      <div class="ct-info">
+        <p class="rv d1">Available for freelance projects, studio collaborations, and full-time opportunities. Let's create something extraordinary.</p>
+        <div class="ct-items">
+          <div class="ct-item rv d2"><div class="ct-ico">📧</div><div><div class="ct-lbl">Email</div><div class="ct-val">alex@3dartist.com</div></div></div>
+          <div class="ct-item rv d3"><div class="ct-ico">📍</div><div><div class="ct-lbl">Location</div><div class="ct-val">Seoul, South Korea</div></div></div>
+          <div class="ct-item rv d4"><div class="ct-ico">💼</div><div><div class="ct-lbl">Status</div><div class="ct-val">Open to Projects</div></div></div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ── Experience ── -->
-  <section class="section" id="experience">
-    <div class="container">
-      <div class="experience-inner">
-        <div class="exp-sidebar fade-up">
-          <div class="section-label">커리어</div>
-          <h2 class="section-title">경력<br/>사항</h2>
-          <p class="section-subtitle" style="margin-top:16px;">다양한 도메인에서 쌓아온 실전 경험입니다.</p>
-        </div>
-        <div class="timeline fade-up">
-          <div class="timeline-item">
-            <div class="timeline-track">
-              <div class="timeline-dot"></div>
-              <div class="timeline-line"></div>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">2023.01 — 현재</div>
-              <div class="timeline-role">Senior UI/UX Designer</div>
-              <div class="timeline-company">테크스타트업 ABC · 정규직</div>
-              <div class="timeline-desc">
-                디자인 시스템 구축 주도, 프로덕트 디자인 팀 리드. 주요 서비스 리뉴얼로 DAU 40% 향상에 기여.
-                Figma 기반 디자인 시스템 컴포넌트 200개 이상 구축.
-              </div>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-track">
-              <div class="timeline-dot"></div>
-              <div class="timeline-line"></div>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">2021.06 — 2022.12</div>
-              <div class="timeline-role">UI Designer & Frontend Developer</div>
-              <div class="timeline-company">디지털 에이전시 XYZ · 정규직</div>
-              <div class="timeline-desc">
-                다양한 클라이언트의 웹사이트/앱 디자인 및 프론트엔드 개발 담당.
-                React 기반 디자인 컴포넌트 라이브러리 구축 및 유지보수.
-              </div>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-track">
-              <div class="timeline-dot"></div>
-              <div class="timeline-line"></div>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">2020.03 — 2021.05</div>
-              <div class="timeline-role">Junior Product Designer</div>
-              <div class="timeline-company">O2O 플랫폼 스타트업 · 정규직</div>
-              <div class="timeline-desc">
-                앱 신규 기능 UI 설계 및 사용성 테스트. 사용자 인터뷰와 A/B 테스트를 통한 데이터 기반 디자인 개선.
-              </div>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-track">
-              <div class="timeline-dot"></div>
-              <div class="timeline-line"></div>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">2020.02</div>
-              <div class="timeline-role">시각디자인학과 졸업</div>
-              <div class="timeline-company">홍익대학교 · 학사</div>
-              <div class="timeline-desc">
-                시각디자인 전공, 사용자경험(UX) 부전공. 졸업 전시 우수상 수상.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="ct-form rvr d2">
+      <h3>Send a Message</h3>
+      <div class="fg"><label class="fl">Your Name</label><input class="fi" type="text" placeholder="John Doe"></div>
+      <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="john@example.com"></div>
+      <div class="fg"><label class="fl">Project Type</label><input class="fi" type="text" placeholder="Game Environment / Archviz / VFX…"></div>
+      <div class="fg"><label class="fl">Message</label><textarea class="fi" placeholder="Tell me about your project…"></textarea></div>
+      <button class="btn-p" style="width:100%;border:none;">Send Message →</button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── Contact ── -->
-  <section class="section contact" id="contact">
-    <div class="container">
-      <div class="contact-inner">
-        <div class="fade-up">
-          <div class="section-label">연락하기</div>
-          <h2 class="section-title">함께 멋진<br/>것을 만들어요</h2>
-          <p class="section-subtitle" style="margin-top:12px;">
-            새로운 프로젝트, 협업 제안, 또는 그냥 안녕 인사도 환영합니다.
-            보통 24시간 이내에 답변드립니다.
-          </p>
-          <div class="contact-links">
-            <div class="contact-link-item">
-              <div class="contact-icon">📧</div>
-              <div>
-                <div class="contact-link-text">이메일</div>
-                <div class="contact-link-val">hello@myportfolio.dev</div>
-              </div>
-            </div>
-            <div class="contact-link-item">
-              <div class="contact-icon">💼</div>
-              <div>
-                <div class="contact-link-text">LinkedIn</div>
-                <div class="contact-link-val">linkedin.com/in/myname</div>
-              </div>
-            </div>
-            <div class="contact-link-item">
-              <div class="contact-icon">🐙</div>
-              <div>
-                <div class="contact-link-text">GitHub</div>
-                <div class="contact-link-val">github.com/myname</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="fade-up">
-          <form class="form" onsubmit="handleSubmit(event)">
-            <div class="form-group">
-              <label class="form-label">이름</label>
-              <input type="text" class="form-input" placeholder="홍길동" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">이메일</label>
-              <input type="email" class="form-input" placeholder="hello@example.com" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">메시지</label>
-              <textarea class="form-input" placeholder="안녕하세요! 함께 작업하고 싶습니다..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">
-              메시지 보내기
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="f-copy">© 2025 <em>Alex Kim</em>. Crafted with passion &amp; precision.</div>
+  <div class="socials">
+    <a class="soc" href="#" title="ArtStation">🎨</a>
+    <a class="soc" href="#" title="LinkedIn">💼</a>
+    <a class="soc" href="#" title="GitHub">📁</a>
+    <a class="soc" href="#" title="Instagram">📸</a>
+    <a class="soc" href="#" title="YouTube">🎬</a>
+  </div>
+</footer>
 
-  <!-- ── Footer ── -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-logo">port<span>.</span>folio</div>
-        <div class="footer-copy">© 2024 All rights reserved.</div>
-        <div class="footer-socials">
-          <a href="#" class="social-btn" title="GitHub">⌂</a>
-          <a href="#" class="social-btn" title="LinkedIn">in</a>
-          <a href="#" class="social-btn" title="Instagram">◎</a>
-          <a href="#" class="social-btn" title="Dribbble">◑</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
 
-  <script>
-    // Intersection Observer for fade-up animations
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, i * 80);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
+<script>
+/* ══ FLOATING PARTICLES ══ */
+(function(){
+  const c=document.getElementById('pts');
+  for(let i=0;i<38;i++){
+    const p=document.createElement('div');
+    const sz=.8+Math.random()*2.4;
+    p.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:#FF4081;`
+      +`left:${Math.random()*100}%;bottom:${Math.random()*12}%;opacity:0;`
+      +`--dx:${(Math.random()-.5)*2};`
+      +`animation:aFloat ${5+Math.random()*10}s ${Math.random()*8}s ease-in-out infinite;`;
+    c.appendChild(p);
+  }
+})();
 
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+/* ══ SCROLL EVENTS ══ */
+window.addEventListener('scroll',()=>{
+  const st=scrollY, dh=document.documentElement.scrollHeight-innerHeight;
+  document.getElementById('prog').style.width=(st/dh*100)+'%';
+  document.getElementById('btt').classList.toggle('on',st>500);
+  document.getElementById('nav').style.boxShadow=st>60?'0 4px 30px rgba(0,0,0,.6)':'none';
+},{passive:true});
 
-    // Nav scroll effect
-    const nav = document.querySelector('.nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 10
-        ? '0 2px 20px rgba(0,0,0,0.08)'
-        : 'none';
+/* ══ SCROLL REVEAL ══ */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.classList.add('on');
+    const fill=e.target.querySelector('.skc-fill');
+    if(fill) fill.style.width=e.target.style.getPropertyValue('--lv');
+  });
+},{threshold:.1,rootMargin:'0px 0px -48px 0px'});
+document.querySelectorAll('.rv,.rvl,.rvr,.skc').forEach(el=>obs.observe(el));
+
+/* ══ STAT COUNTER ══ */
+const cObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.querySelectorAll('.stat-n').forEach(n=>{
+      const target=+n.dataset.target,suf=n.dataset.suffix||'';
+      let cur=0;const step=target/55;
+      const t=setInterval(()=>{cur=Math.min(cur+step,target);n.textContent=Math.floor(cur)+suf;if(cur>=target)clearInterval(t);},16);
     });
+    cObs.unobserve(e.target);
+  });
+},{threshold:.6});
+const hs=document.querySelector('.h-stats');
+if(hs) cObs.observe(hs);
 
-    // Form submit
-    function handleSubmit(e) {
-      e.preventDefault();
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.textContent = '✓ 전송 완료!';
-      btn.style.background = '#22C55E';
-      btn.style.boxShadow = '0 8px 32px rgba(34,197,94,0.3)';
-      setTimeout(() => {
-        btn.innerHTML = '메시지 보내기 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
-        btn.style.background = '';
-        btn.style.boxShadow = '';
-        e.target.reset();
-      }, 3000);
-    }
-  </script>
+/* ══ MOBILE NAV ══ */
+const mo=document.getElementById('mo'),mm=document.getElementById('mm');
+function openNav(){mm.classList.add('on');mo.classList.add('on');document.body.style.overflow='hidden';}
+function closeNav(){mm.classList.remove('on');mo.classList.remove('on');document.body.style.overflow='';}
+document.getElementById('hbg').onclick=openNav;
+document.getElementById('mx').onclick=closeNav;
+mo.onclick=closeNav;
+mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNav));
 
+/* ══ FILTER TABS ══ */
+document.querySelectorAll('.filt').forEach(b=>{
+  b.onclick=function(){
+    document.querySelectorAll('.filt').forEach(x=>x.classList.remove('act'));
+    this.classList.add('act');
+  };
+});
+
+/* ══ SMOOTH ANCHOR SCROLL ══ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.onclick=function(e){
+    e.preventDefault();
+    const t=document.querySelector(this.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+});
+
+/* ══ CURSOR GLOW ══ */
+const cg=document.getElementById('cg');
+document.addEventListener('mousemove',e=>{
+  cg.style.left=e.clientX+'px';
+  cg.style.top=e.clientY+'px';
+},{passive:true});
+
+/* ══ PORTFOLIO CARD 3D TILT ══ */
+document.querySelectorAll('.pc').forEach(card=>{
+  card.addEventListener('mouseenter',()=>{
+    card.style.transition='transform .08s ease,box-shadow .4s,border-color .4s';
+  });
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(900px) rotateX(${-y*7}deg) rotateY(${x*7}deg) translateY(-8px)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transition='transform .55s cubic-bezier(.16,1,.3,1),box-shadow .4s,border-color .4s';
+    card.style.transform='';
+  });
+});
+
+/* ══ TOUCH SUPPORT FOR MOBILE CARDS ══ */
+document.querySelectorAll('.pc,.skc').forEach(c=>{
+  c.addEventListener('touchstart',()=>c.classList.add('touch'),{passive:true});
+  c.addEventListener('touchend',()=>{setTimeout(()=>c.classList.remove('touch'),400);},{passive:true});
+});
+</script>
 </body>
 </html>
