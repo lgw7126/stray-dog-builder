@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/a636d81d-6e62-4fb7-b494-387d63cbc0bf
+
 # 🐾 유기견 홍보 빌더
 
 강아지 사진을 업로드하면 **Claude AI**가 홍보 포스터, SNS 카드뉴스, 입양 신청 페이지를 자동 생성해주는 웹앱
