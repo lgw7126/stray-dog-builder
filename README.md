@@ -2,6 +2,8 @@
 
 강아지 사진을 업로드하면 **Claude AI**가 홍보 포스터, SNS 카드뉴스, 입양 신청 페이지를 자동 생성해주는 웹앱
 
+## 👉 [https://stray-dog-builder-z4nw.vercel.app](https://stray-dog-builder-z4nw.vercel.app)
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flgw7126%2Fstray-dog-builder%2Ftree%2Fclaude%2Frescue-dog-promo-builder-gvhqF&env=ANTHROPIC_API_KEY&envDescription=Anthropic+API+키+%28console.anthropic.com%EC%97%90%EC%84%9C+%EB%B0%9C%EA%B8%89%29&project-name=stray-dog-builder&repository-name=stray-dog-builder-fork)
 
 ---
