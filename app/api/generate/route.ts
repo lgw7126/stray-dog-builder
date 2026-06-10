@@ -70,17 +70,20 @@ ${additionalInfo ? `추가 정보: ${additionalInfo}` : ''}
 `;
 
 export async function POST(request: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json(
-      { error: 'ANTHROPIC_API_KEY가 설정되지 않았습니다.' },
-      { status: 500 }
-    );
-  }
-
   try {
     const formData = await request.formData();
     const file = formData.get('image') as File | null;
     const additionalInfo = (formData.get('additionalInfo') as string) || '';
+    const userApiKey = (formData.get('apiKey') as string) || '';
+
+    const apiKey = userApiKey.trim() || process.env.ANTHROPIC_API_KEY || '';
+
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API 키를 입력해주세요. Anthropic 콘솔(console.anthropic.com)에서 발급받을 수 있습니다.' },
+        { status: 400 }
+      );
+    }
 
     if (!file) {
       return NextResponse.json(
@@ -101,7 +104,7 @@ export async function POST(request: NextRequest) {
     const base64 = Buffer.from(bytes).toString('base64');
     const mediaType = file.type as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const client = new Anthropic({ apiKey });
 
     const response = await client.messages.create({
       model: 'claude-opus-4-8',

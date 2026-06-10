@@ -15,6 +15,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('poster');
   const [isDragging, setIsDragging] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
@@ -70,6 +72,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append('image', image);
       formData.append('additionalInfo', additionalInfo);
+      if (apiKey.trim()) formData.append('apiKey', apiKey.trim());
 
       const res = await fetch('/api/generate', {
         method: 'POST',
@@ -160,6 +163,41 @@ ${adoptionPage.specialNotes}`;
       </header>
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+        {/* API Key Section */}
+        <div className="bg-white rounded-2xl shadow-md p-6 border border-amber-100">
+          <h2 className="text-lg font-semibold text-amber-900 mb-1">
+            🔑 Anthropic API 키
+          </h2>
+          <p className="text-xs text-amber-500 mb-3">
+            체험하려면 본인의 API 키가 필요합니다 —{' '}
+            <a
+              href="https://console.anthropic.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-amber-700"
+            >
+              console.anthropic.com
+            </a>
+            에서 무료로 발급 (키는 서버에 저장되지 않습니다)
+          </p>
+          <div className="flex gap-2">
+            <input
+              type={showApiKey ? 'text' : 'password'}
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="sk-ant-api03-..."
+              className="flex-1 rounded-lg border border-amber-200 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 font-mono"
+            />
+            <button
+              type="button"
+              onClick={() => setShowApiKey((v) => !v)}
+              className="px-3 py-2 rounded-lg border border-amber-200 text-amber-600 text-sm hover:bg-amber-50"
+            >
+              {showApiKey ? '숨기기' : '보기'}
+            </button>
+          </div>
+        </div>
+
         {/* Upload Section */}
         <div className="bg-white rounded-2xl shadow-md p-6 border border-amber-100">
           <h2 className="text-lg font-semibold text-amber-900 mb-4">
